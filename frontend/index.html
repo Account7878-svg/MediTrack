@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediTrack Pro | Inventory Management</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for premium typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">✦</div>
+            <div class="brand-text">
+                <h1>MediTrack</h1>
+                <p>PRO EDITION</p>
+            </div>
+        </div>
+
+        <p class="sidebar-label">MAIN MENU</p>
+        <nav class="sidebar-nav">
+            <a class="nav-link active" href="#dashboard"><span class="icon">▤</span> Dashboard</a>
+            <a class="nav-link" href="#inventory"><span class="icon">▦</span> Inventory Data</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-status">
+                <span class="status-indicator live"></span>
+                <div class="status-text">
+                    <strong>Backend Connected</strong>
+                    <small>127.0.0.1:8000</small>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="dashboard">
+        <header class="topbar">
+            <div class="header-titles">
+                <p class="eyebrow">OVERVIEW</p>
+                <h1>Inventory Dashboard</h1>
+            </div>
+            <div class="topbar-actions">
+                <button type="button" class="btn btn-primary shadow-hover" id="add-medicine-btn">
+                    <span class="plus">+</span> Add Medicine
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Grid (Hooked to your JS) -->
+        <section class="stats-grid">
+            <article class="stat-card">
+                <div class="stat-icon bg-blue">▤</div>
+                <div class="stat-details">
+                    <h3>Total Medicines</h3>
+                    <p class="stat-number" id="total-medicines">0</p>
+                </div>
+            </article>
+            <article class="stat-card">
+                <div class="stat-icon bg-yellow">↓</div>
+                <div class="stat-details">
+                    <h3>Low Stock</h3>
+                    <p class="stat-number" id="low-stock-count">0</p>
+                </div>
+            </article>
+            <article class="stat-card">
+                <div class="stat-icon bg-purple">◷</div>
+                <div class="stat-details">
+                    <h3>Expiring Soon</h3>
+                    <p class="stat-number" id="expiring-count">0</p>
+                </div>
+            </article>
+            <article class="stat-card">
+                <div class="stat-icon bg-red">!</div>
+                <div class="stat-details">
+                    <h3>Expired</h3>
+                    <p class="stat-number" id="expired-count">0</p>
+                </div>
+            </article>
+        </section>
+
+        <!-- Inventory Table -->
+        <section class="inventory-panel" id="inventory">
+            <div class="panel-header">
+                <div>
+                    <h2>Medicine Database</h2>
+                    <p class="panel-subtitle" id="record-count">Loading medicines...</p>
+                </div>
+                
+                <div class="toolbar">
+                    <div class="search-box">
+                        <span class="search-icon">⌕</span>
+                        <input type="search" id="search-input" placeholder="Search by name, batch, or type...">
+                    </div>
+                    <select id="status-filter" class="filter-dropdown">
+                        <option value="all">All Statuses</option>
+                        <option value="in stock">In Stock</option>
+                        <option value="low stock">Low Stock</option>
+                        <option value="expiring soon">Expiring Soon</option>
+                        <option value="expired">Expired</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>MEDICINE & TYPE</th>
+                            <th>BATCH NO.</th>
+                            <th>QUANTITY</th>
+                            <th>EXPIRY DATE</th>
+                            <th>STATUS</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-body">
+                        <tr><td colspan="6" class="loading-cell">Connecting to C Backend...</td></tr>
+                    </tbody>
+                </table>
+                <div class="empty-state" id="empty-state" hidden>
+                    <div class="empty-icon">▤</div>
+                    <h3>No records found</h3>
+                    <p>Add a medicine to populate the database.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- Add/Edit Medicine Modal -->
+<dialog class="medicine-dialog" id="medicine-dialog">
+    <div class="dialog-header">
+        <h2 id="dialog-title">Add new medicine</h2>
+        <button type="button" class="dialog-close" id="close-dialog-btn">&times;</button>
+    </div>
+
+    <form id="medicine-form">
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="medicine-name">Medicine Name</label>
+                <input id="medicine-name" name="name" type="text" placeholder="e.g. Paracetamol 500mg" required>
+            </div>
+            <div class="form-group">
+                <label for="batch-number">Batch Number</label>
+                <input id="batch-number" name="batch" type="text" placeholder="e.g. BTH-001" required>
+            </div>
+            <div class="form-group">
+                <label for="medicine-type">Medicine Type</label>
+                <select id="medicine-type" name="type">
+                    <option value="Tablet">Tablet</option>
+                    <option value="Capsule">Capsule</option>
+                    <option value="Syrup">Syrup</option>
+                    <option value="Injection">Injection</option>
+                    <option value="Ointment">Ointment</option>
+                    <option value="Drops">Drops</option>
+                    <option value="Other" selected>Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity (Base Units)</label>
+                <input id="quantity" name="quantity" type="number" min="0" step="1" placeholder="e.g. 150" required>
+            </div>
+            <div class="form-group">
+                <label for="expiry-date">Expiry Date</label>
+                <input id="expiry-date" name="expiry" type="date" required>
+            </div>
+        </div>
+
+        <p class="form-error" id="form-error" hidden></p>
+
+        <div class="dialog-actions">
+            <button type="button" class="btn btn-secondary" id="cancel-dialog-btn">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="save-medicine-btn">Save medicine</button>
+        </div>
+    </form>
+</dialog>
+
+<!-- Toast Notifications -->
+<div class="toast" id="toast" role="status"></div>
+
+<script src="app.js"></script>
+<script src="alert.js"></script>
+</body>
+</html>
